@@ -2,8 +2,13 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>诺艾利亚的魔法书桌 | Noelier's Desk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>诺艾利亚的笔记 | Noelier's Journal</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Long+Cang&display=swap" rel="stylesheet">
+
     <style>
         /* --- 基础设定 --- */
         body, html {
@@ -11,10 +16,16 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            overflow: hidden; /* 禁止滚动 */
             background-color: #050505;
-            font-family: 'Georgia', 'Times New Roman', serif;
-            cursor: none; /* 隐藏默认鼠标，使用光圈 */
+            /* 正文使用古籍衬线体 */
+            font-family: 'EB Garamond', 'Songti SC', serif; 
+            touch-action: none; /* 禁止移动端默认的手势（如刷新、滚动） */
+        }
+
+        /* PC端隐藏鼠标，移动端保持默认 */
+        @media (hover: hover) {
+            body { cursor: none; }
         }
 
         /* --- 容器与背景 --- */
@@ -22,9 +33,9 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            /* 如果你还没生成图片，暂时用深色渐变代替 */
+            /* 深色背景渐变，模拟深夜书桌 */
             background: radial-gradient(circle, #2a221b 0%, #08080a 100%);
-            /* 当你有图片后，取消下面这行的注释，并确保路径正确 */
+            /* 如果有背景图，取消下面注释 */
             /* background-image: url('bg.jpg'); background-size: cover; background-position: center; */
             display: flex;
             justify-content: center;
@@ -34,87 +45,82 @@
         /* --- 物品通用样式 --- */
         .item {
             position: absolute;
-            transition: all 0.3s ease;
-            cursor: none; /* 保持无鼠标状态 */
-            filter: brightness(0.4) sepia(0.5); /* 默认在黑暗中看不清 */
+            transition: transform 0.2s ease, filter 0.3s ease;
+            filter: brightness(0.4) sepia(0.5); /* 默认黑暗 */
             z-index: 5;
+            /* 物品文字使用手写体 */
+            font-family: 'Dancing Script', cursive; 
+            font-weight: 700;
+            color: #d4af37;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent; /* 移动端点击不高亮 */
         }
 
-        /* 鼠标悬停（被照亮）时的效果 */
-        .item:hover {
+        .item:hover, .item:active {
             transform: scale(1.05);
             filter: brightness(1.2) sepia(0) drop-shadow(0 0 15px rgba(255, 200, 100, 0.6));
         }
 
-        /* --- 物品定位与占位符 (没有图片时显示方块) --- */
-        
-        /* 1. 古籍 (书) */
-        #item-book {
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 25vw; height: 18vw;
-        }
-        
-        /* 2. 圆镜 (角色) */
-        #item-mirror {
-            top: 20%; left: 15%;
-            width: 10vw; height: 14vw;
-            transform: rotate(-5deg);
-        }
-
-        /* 3. 铁牌 (雷肖恩) */
-        #item-tag {
-            top: 65%; left: 25%;
-            width: 6vw; height: 6vw;
-            transform: rotate(15deg);
-        }
-
-        /* 4. 金币 (杰拉弗斯) */
-        #item-coin {
-            top: 70%; left: 75%;
-            width: 4vw; height: 4vw;
-        }
-
-        /* 如果没有图片，用这个样式显示文字方块方便调试 */
+        /* 占位符样式 (没有图片时) */
         .placeholder-art {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px dashed rgba(255, 215, 0, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 215, 0, 0.2);
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #d4af37;
-            font-size: 1rem;
             text-align: center;
-            border-radius: 10px;
+            border-radius: 8px;
+            font-size: 1.5rem; /* 大字体手写感 */
         }
 
-        /* --- 光影遮罩层 (核心视觉) --- */
+        /* --- 物品定位 (响应式布局) --- */
+        
+        /* 默认 PC 布局 */
+        #item-book { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 220px; }
+        #item-mirror { top: 15%; left: 15%; width: 120px; height: 160px; transform: rotate(-5deg); }
+        #item-tag { top: 65%; left: 20%; width: 80px; height: 100px; transform: rotate(15deg); }
+        #item-coin { top: 70%; left: 80%; width: 60px; height: 60px; }
+
+        /* 移动端布局 (竖屏) */
+        @media (max-width: 768px) {
+            .placeholder-art { font-size: 1.2rem; }
+            
+            /* 重新排列，避免重叠 */
+            #item-book { top: 45%; width: 220px; height: 160px; }
+            #item-mirror { top: 10%; left: 50%; transform: translateX(-50%); width: 100px; height: 120px; }
+            #item-tag { top: 70%; left: 20%; width: 70px; height: 90px; }
+            #item-coin { top: 75%; left: 70%; width: 50px; height: 50px; }
+        }
+
+        /* --- 光影遮罩层 --- */
         .darkness-overlay {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            pointer-events: none; /* 让点击穿透 */
+            pointer-events: none;
             z-index: 10;
-            /* 动态光圈 */
             background: radial-gradient(
-                circle 250px at var(--x, 50%) var(--y, 50%), 
-                transparent 10%, 
-                rgba(0, 0, 0, 0.85) 40%, 
-                rgba(0, 0, 0, 0.98) 100%
+                circle 200px at var(--x, 50%) var(--y, 50%), 
+                transparent 5%, 
+                rgba(0, 0, 0, 0.6) 30%, 
+                rgba(0, 0, 0, 0.95) 100%
             );
         }
 
-        /* 跟随鼠标的小光点 */
+        /* 光点 (移动端也可以显示，作为一种反馈) */
         .cursor-light {
             position: absolute;
-            width: 20px; height: 20px;
-            background: rgba(255, 180, 80, 0.8);
+            width: 30px; height: 30px;
+            background: rgba(255, 160, 60, 0.5);
             border-radius: 50%;
             pointer-events: none;
             z-index: 11;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 20px 10px rgba(255, 140, 0, 0.4);
+            box-shadow: 0 0 30px 15px rgba(255, 140, 0, 0.3);
             mix-blend-mode: screen;
+            opacity: 0; /* 默认隐藏，有交互时显示 */
+            transition: opacity 0.2s;
         }
 
         /* --- 弹窗样式 (Modal) --- */
@@ -123,51 +129,55 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             z-index: 100;
             justify-content: center;
             align-items: center;
-            cursor: auto; /* 弹窗里恢复鼠标 */
+            backdrop-filter: blur(5px);
         }
 
         .modal-content {
-            background: #e3dcd2; /* 羊皮纸色 */
-            width: 600px;
-            max-width: 80%;
-            padding: 40px;
-            border-radius: 5px;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+            background: #e8e0d2;
+            width: 85%;
+            max-width: 500px;
+            max-height: 80vh;
+            padding: 30px;
+            border-radius: 4px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 1);
             border: 1px solid #8b7355;
             position: relative;
-            background-image: linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
-            background-size: 100% 2em; /* 信纸线条感 */
+            overflow-y: auto; /* 内容多时可滚动 */
+            
+            /* 信纸线条效果 */
+            background-image: repeating-linear-gradient(#e8e0d2 0px, #e8e0d2 24px, #d3c6b1 25px);
         }
 
         .modal-title {
-            font-family: 'Cinzel', serif; /* 或者是衬线体 */
-            font-size: 2rem;
+            font-family: 'Dancing Script', cursive; /* 标题手写体 */
+            font-size: 2.2rem;
             color: #3e2723;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #3e2723;
-            padding-bottom: 10px;
+            margin: 0 0 15px 0;
+            border-bottom: 2px solid #5d4037;
+            padding-bottom: 5px;
         }
 
         .modal-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #212121;
+            font-family: 'EB Garamond', serif; /* 正文易读衬线体 */
+            font-size: 1.2rem;
+            line-height: 1.6; /* 对齐信纸线条 */
+            color: #2b2b2b;
         }
 
         .close-btn {
             position: absolute;
-            top: 10px; right: 20px;
+            top: 10px; right: 15px;
             font-size: 2rem;
             cursor: pointer;
-            color: #5d4037;
+            color: #8b0000;
+            font-family: sans-serif;
+            font-weight: bold;
+            z-index: 101;
         }
-        
-        .close-btn:hover { color: #d50000; }
-
     </style>
 </head>
 <body>
@@ -175,67 +185,63 @@
     <div class="desk-container">
         
         <div id="item-book" class="item placeholder-art" onclick="openModal('book')">
-            神秘古籍<br>(点击阅读)
+            失落古籍
         </div>
 
         <div id="item-mirror" class="item placeholder-art" onclick="openModal('mirror')">
-            圆镜
+            伙伴
         </div>
 
         <div id="item-tag" class="item placeholder-art" onclick="openModal('reshaun')">
-            无字铁牌
+            无字牌
         </div>
 
         <div id="item-coin" class="item placeholder-art" onclick="openModal('jalavers')">
-            一枚金币
+            金币
         </div>
 
         <div class="darkness-overlay" id="overlay"></div>
         <div class="cursor-light" id="cursor"></div>
     </div>
 
-    <div id="modal-overlay" class="modal" onclick="closeModal(event)">
+    <div id="modal-overlay" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <span class="close-btn" onclick="closeModalDirect()">×</span>
+            <span class="close-btn" onclick="closeModal()">×</span>
             <h2 id="m-title" class="modal-title">标题</h2>
             <div id="m-text" class="modal-text">内容...</div>
         </div>
     </div>
 
     <script>
-        // --- 1. 数据内容 (来自你的文档) ---
+        // --- 数据内容 (保持不变) ---
         const contentData = {
             'book': {
-                title: "失落的东方教派",
-                text: "这本古籍的书页已经泛黄。这里记录着一个遥远东方古国的教派，名字已经模糊不清。它并不信仰具体的某个神明，而是信仰整个自然，以及世界运行的规律。这与我所知的西方教派截然不同……<br><br>这是我旅途的起点。为了寻找它，我必须穿越库德马克。"
+                title: "东方古国的回响",
+                text: "这本古籍的书页已经泛黄而脆弱。它记录着一个遥远的教派——不信奉真神，而信奉自然与规律。<br><br>这是我离开高塔的理由，也是一切的起点。在这个充斥着奥术与机械的时代，这种古老的智慧究竟意味着什么？"
             },
             'reshaun': {
                 title: "雷肖恩的铁牌",
-                text: "一块磨损严重的铁牌，挂在皮绳上。通常这种牌子用来辨别佣兵的身份，但这块上面什么都没有刻。<br><br>雷肖恩从不谈论它。也许正如他所想，如果他不属于任何地方，不曾在世间留下有意义的痕迹，就没有刻下名字的必要。他在等待一个可以称之为“家”的地方，等待一个值得他留下痕迹的时刻。"
+                text: "一块冰冷、粗糙的铁牌。通常佣兵会在上面刻下名字和血型，以便收尸时辨认。<br><br>但这块牌子是空白的。<br><br>“如果不属于任何地方，就没有留下名字的必要。”他曾这样沉默地擦拭着剑刃。他在等待一个值得让他刻下名字的归处。"
             },
             'jalavers': {
-                title: "杰拉弗斯的金币",
-                text: "这枚金币在杰拉弗斯的手指间翻飞。对于这个提夫林少年来说，金币不仅是生存的保障，也是某种虚幻安全感的来源。<br><br>“既然你们都觉得我是天生坏种，那我就坏给你们看。”<br>他总是这样笑着，但在无人的角落，他比谁都渴望用这枚金币换取一个真正的家，而不是另一个冰冷的帮派。"
+                title: "幸运金币",
+                text: "杰拉弗斯总是在指尖把玩这枚金币。对于提夫林少年来说，这是他在库德马克混乱街头唯一的依靠。<br><br>他总是笑嘻嘻地抛起它，仿佛一切都不在乎。但在金币落下的瞬间，你能看到他眼中对“家”的渴望。"
             },
             'mirror': {
-                title: "小队定妆",
-                text: "镜面倒映出几个熟悉的身影：<br><br><b>诺艾利亚</b>：眼神深邃的法师，那是镜子前的我自己。<br><b>瑟兰提斯</b>：擦拭圣徽的圣骑士，金色的枷锁与利剑。<br><b>伊索瑞安</b>：沐浴在月光下的精灵，不知阴霾的太阳。<br><br>命运让我们在微光中相遇。"
+                title: "旅途中的倒影",
+                text: "镜中映出我们的模样：<br><br>我看见<b>瑟兰提斯</b>卸下了沉重的头盔；<br>看见<b>伊索瑞安</b>在月光下擦拭弓箭；<br>也看见我自己，诺艾利亚，眼神中既有迷茫也有坚定。<br><br>我们是微光中的守望者。"
             }
         };
 
-        // --- 2. 交互逻辑 ---
-        
+        // --- 核心交互逻辑 (兼容移动端) ---
         const overlay = document.getElementById('overlay');
         const cursor = document.getElementById('cursor');
         const modal = document.getElementById('modal-overlay');
         const mTitle = document.getElementById('m-title');
         const mText = document.getElementById('m-text');
 
-        // 鼠标移动：更新手电筒位置
-        document.addEventListener('mousemove', (e) => {
-            const x = e.clientX;
-            const y = e.clientY;
-            
+        // 通用光照移动函数
+        function moveLight(x, y) {
             // CSS 变量更新
             overlay.style.setProperty('--x', x + 'px');
             overlay.style.setProperty('--y', y + 'px');
@@ -243,6 +249,26 @@
             // 光标更新
             cursor.style.left = x + 'px';
             cursor.style.top = y + 'px';
+            cursor.style.opacity = '1';
+        }
+
+        // PC端：鼠标移动
+        document.addEventListener('mousemove', (e) => {
+            moveLight(e.clientX, e.clientY);
+        });
+
+        // 移动端：手指拖拽 (Touch)
+        document.addEventListener('touchmove', (e) => {
+            // 阻止页面默认滚动，保证体验像在探索一张固定的桌子
+            e.preventDefault(); 
+            const touch = e.touches[0];
+            moveLight(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+        // 移动端：手指点击瞬间也要更新光照位置
+        document.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            moveLight(touch.clientX, touch.clientY);
         });
 
         // 打开弹窗
@@ -252,21 +278,13 @@
                 mTitle.innerHTML = data.title;
                 mText.innerHTML = data.text;
                 modal.style.display = 'flex';
-                document.body.style.cursor = 'auto'; // 弹窗时恢复鼠标
             }
         }
 
         // 关闭弹窗
-        function closeModal(event) {
+        function closeModal() {
             modal.style.display = 'none';
-            document.body.style.cursor = 'none'; // 恢复光圈模式
         }
-        
-        function closeModalDirect() {
-            modal.style.display = 'none';
-            document.body.style.cursor = 'none';
-        }
-
     </script>
 </body>
 </html>
