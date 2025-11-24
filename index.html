@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>诺艾利亚的魔法书桌 | Noelier's Desk</title>
+    <style>
+        /* --- 基础设定 --- */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #050505;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            cursor: none; /* 隐藏默认鼠标，使用光圈 */
+        }
+
+        /* --- 容器与背景 --- */
+        .desk-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            /* 如果你还没生成图片，暂时用深色渐变代替 */
+            background: radial-gradient(circle, #2a221b 0%, #08080a 100%);
+            /* 当你有图片后，取消下面这行的注释，并确保路径正确 */
+            /* background-image: url('bg.jpg'); background-size: cover; background-position: center; */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- 物品通用样式 --- */
+        .item {
+            position: absolute;
+            transition: all 0.3s ease;
+            cursor: none; /* 保持无鼠标状态 */
+            filter: brightness(0.4) sepia(0.5); /* 默认在黑暗中看不清 */
+            z-index: 5;
+        }
+
+        /* 鼠标悬停（被照亮）时的效果 */
+        .item:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2) sepia(0) drop-shadow(0 0 15px rgba(255, 200, 100, 0.6));
+        }
+
+        /* --- 物品定位与占位符 (没有图片时显示方块) --- */
+        
+        /* 1. 古籍 (书) */
+        #item-book {
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 25vw; height: 18vw;
+        }
+        
+        /* 2. 圆镜 (角色) */
+        #item-mirror {
+            top: 20%; left: 15%;
+            width: 10vw; height: 14vw;
+            transform: rotate(-5deg);
+        }
+
+        /* 3. 铁牌 (雷肖恩) */
+        #item-tag {
+            top: 65%; left: 25%;
+            width: 6vw; height: 6vw;
+            transform: rotate(15deg);
+        }
+
+        /* 4. 金币 (杰拉弗斯) */
+        #item-coin {
+            top: 70%; left: 75%;
+            width: 4vw; height: 4vw;
+        }
+
+        /* 如果没有图片，用这个样式显示文字方块方便调试 */
+        .placeholder-art {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(255, 215, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #d4af37;
+            font-size: 1rem;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        /* --- 光影遮罩层 (核心视觉) --- */
+        .darkness-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; /* 让点击穿透 */
+            z-index: 10;
+            /* 动态光圈 */
+            background: radial-gradient(
+                circle 250px at var(--x, 50%) var(--y, 50%), 
+                transparent 10%, 
+                rgba(0, 0, 0, 0.85) 40%, 
+                rgba(0, 0, 0, 0.98) 100%
+            );
+        }
+
+        /* 跟随鼠标的小光点 */
+        .cursor-light {
+            position: absolute;
+            width: 20px; height: 20px;
+            background: rgba(255, 180, 80, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 11;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px 10px rgba(255, 140, 0, 0.4);
+            mix-blend-mode: screen;
+        }
+
+        /* --- 弹窗样式 (Modal) --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            cursor: auto; /* 弹窗里恢复鼠标 */
+        }
+
+        .modal-content {
+            background: #e3dcd2; /* 羊皮纸色 */
+            width: 600px;
+            max-width: 80%;
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+            border: 1px solid #8b7355;
+            position: relative;
+            background-image: linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+            background-size: 100% 2em; /* 信纸线条感 */
+        }
+
+        .modal-title {
+            font-family: 'Cinzel', serif; /* 或者是衬线体 */
+            font-size: 2rem;
+            color: #3e2723;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3e2723;
+            padding-bottom: 10px;
+        }
+
+        .modal-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #212121;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px; right: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #5d4037;
+        }
+        
+        .close-btn:hover { color: #d50000; }
+
+    </style>
+</head>
+<body>
+
+    <div class="desk-container">
+        
+        <div id="item-book" class="item placeholder-art" onclick="openModal('book')">
+            神秘古籍<br>(点击阅读)
+        </div>
+
+        <div id="item-mirror" class="item placeholder-art" onclick="openModal('mirror')">
+            圆镜
+        </div>
+
+        <div id="item-tag" class="item placeholder-art" onclick="openModal('reshaun')">
+            无字铁牌
+        </div>
+
+        <div id="item-coin" class="item placeholder-art" onclick="openModal('jalavers')">
+            一枚金币
+        </div>
+
+        <div class="darkness-overlay" id="overlay"></div>
+        <div class="cursor-light" id="cursor"></div>
+    </div>
+
+    <div id="modal-overlay" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-btn" onclick="closeModalDirect()">×</span>
+            <h2 id="m-title" class="modal-title">标题</h2>
+            <div id="m-text" class="modal-text">内容...</div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. 数据内容 (来自你的文档) ---
+        const contentData = {
+            'book': {
+                title: "失落的东方教派",
+                text: "这本古籍的书页已经泛黄。这里记录着一个遥远东方古国的教派，名字已经模糊不清。它并不信仰具体的某个神明，而是信仰整个自然，以及世界运行的规律。这与我所知的西方教派截然不同……<br><br>这是我旅途的起点。为了寻找它，我必须穿越库德马克。"
+            },
+            'reshaun': {
+                title: "雷肖恩的铁牌",
+                text: "一块磨损严重的铁牌，挂在皮绳上。通常这种牌子用来辨别佣兵的身份，但这块上面什么都没有刻。<br><br>雷肖恩从不谈论它。也许正如他所想，如果他不属于任何地方，不曾在世间留下有意义的痕迹，就没有刻下名字的必要。他在等待一个可以称之为“家”的地方，等待一个值得他留下痕迹的时刻。"
+            },
+            'jalavers': {
+                title: "杰拉弗斯的金币",
+                text: "这枚金币在杰拉弗斯的手指间翻飞。对于这个提夫林少年来说，金币不仅是生存的保障，也是某种虚幻安全感的来源。<br><br>“既然你们都觉得我是天生坏种，那我就坏给你们看。”<br>他总是这样笑着，但在无人的角落，他比谁都渴望用这枚金币换取一个真正的家，而不是另一个冰冷的帮派。"
+            },
+            'mirror': {
+                title: "小队定妆",
+                text: "镜面倒映出几个熟悉的身影：<br><br><b>诺艾利亚</b>：眼神深邃的法师，那是镜子前的我自己。<br><b>瑟兰提斯</b>：擦拭圣徽的圣骑士，金色的枷锁与利剑。<br><b>伊索瑞安</b>：沐浴在月光下的精灵，不知阴霾的太阳。<br><br>命运让我们在微光中相遇。"
+            }
+        };
+
+        // --- 2. 交互逻辑 ---
+        
+        const overlay = document.getElementById('overlay');
+        const cursor = document.getElementById('cursor');
+        const modal = document.getElementById('modal-overlay');
+        const mTitle = document.getElementById('m-title');
+        const mText = document.getElementById('m-text');
+
+        // 鼠标移动：更新手电筒位置
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            // CSS 变量更新
+            overlay.style.setProperty('--x', x + 'px');
+            overlay.style.setProperty('--y', y + 'px');
+            
+            // 光标更新
+            cursor.style.left = x + 'px';
+            cursor.style.top = y + 'px';
+        });
+
+        // 打开弹窗
+        function openModal(key) {
+            const data = contentData[key];
+            if(data) {
+                mTitle.innerHTML = data.title;
+                mText.innerHTML = data.text;
+                modal.style.display = 'flex';
+                document.body.style.cursor = 'auto'; // 弹窗时恢复鼠标
+            }
+        }
+
+        // 关闭弹窗
+        function closeModal(event) {
+            modal.style.display = 'none';
+            document.body.style.cursor = 'none'; // 恢复光圈模式
+        }
+        
+        function closeModalDirect() {
+            modal.style.display = 'none';
+            document.body.style.cursor = 'none';
+        }
+
+    </script>
+</body>
+</html>
