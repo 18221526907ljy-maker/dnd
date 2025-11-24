@@ -3,409 +3,353 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>诺艾利亚的营地书桌 | Noelier's Camp Desk</title>
+    <title>诺艾利亚的营地书桌 | Noelier's Journey</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Long+Cang&display=swap" rel="stylesheet">
+
     <style>
-        /* --- 1. 字体系统 --- */
+        /* --- 1. 核心变量 --- */
         :root {
-            /* 标题：兼容性极好的手写风格 */
-            --font-hand: "KaiTi", "STKaiti", "Xingkai SC", "SimKai", "Brush Script MT", cursive;
-            /* 正文：沉稳的衬线体 */
-            --font-serif: "Songti SC", "SimSun", "Times New Roman", serif;
+            --font-hand: 'Long Cang', "KaiTi", cursive; /* 标题手写风 */
+            --font-serif: 'EB Garamond', "Songti SC", serif; /* 正文沉浸风 */
+            --moth-color: rgba(200, 240, 255, 0.9); /* 飞蛾的光色 */
         }
 
-        /* --- 2. 基础设定 --- */
-        
-        body, html {<div id="intro-overlay">
-        <div class="moth-container">
-            <div class="moth-wing left"></div>
-            <div class="moth-body"></div>
-            <div class="moth-wing right"></div>
-            <div class="moth-trail"></div>
-        </div>
-
-        <div class="intro-text-box">
-            <div class="intro-date">午夜 · 库德马克边境</div>
-            <p>
-                所谓冒险，不过是将生命的全部重量，<br>
-                压缩进这方寸之间的行囊。
-            </p>
-            <p>
-                荣耀是银色的枷锁，<br>
-                纯真是易碎的水晶，<br>
-                归宿是空白的铁牌。
-            </p>
-            <div class="intro-footer">
-                <span class="click-hint">点击屏幕，惊飞星尘</span>
-            </div>
-        </div>
-    </div>
-
-    <style>
-        /* --- 开场遮罩样式 --- */
-        #intro-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            z-index: 9999;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            transition: opacity 1.5s ease-in-out;
-            cursor: pointer;
-        }
-
-        .intro-text-box {
-            color: #dcdcdc;
-            text-align: center;
-            opacity: 0;
-            animation: textFadeIn 2s ease-out 1.5s forwards; /* 延迟出现 */
-            max-width: 600px;
-            padding: 20px;
-        }
-
-        .intro-date {
-            font-family: var(--font-hand);
-            color: #ffd700;
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            letter-spacing: 3px;
-        }
-
-        .intro-text-box p {
-            font-family: var(--font-serif);
-            font-size: 1.2rem;
-            line-height: 2;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-        }
-
-        .intro-footer {
-            margin-top: 40px;
-            font-size: 0.9rem;
-            color: #666;
-            animation: pulse 2s infinite;
-        }
-
-        /* --- 星尘蛾 CSS 绘图与动画 --- */
-        .moth-container {
-            position: absolute;
-            width: 20px; height: 20px;
-            /* 飞行轨迹动画 */
-            animation: flyPath 4s ease-in-out infinite;
-            filter: drop-shadow(0 0 10px rgba(100, 200, 255, 0.8));
-        }
-
-        .moth-body {
-            width: 4px; height: 12px; background: #fff;
-            border-radius: 2px; position: absolute; left: 8px; top: 4px;
-        }
-
-        .moth-wing {
-            width: 12px; height: 18px;
-            background: rgba(200, 240, 255, 0.6);
-            position: absolute; top: 0;
-            border-radius: 50% 50% 0 50%;
-            transform-origin: center bottom;
-        }
-        .moth-wing.left { left: -8px; transform: rotate(30deg); animation: flapL 0.1s infinite alternate; }
-        .moth-wing.right { right: -8px; transform: scaleX(-1) rotate(30deg); animation: flapR 0.1s infinite alternate; }
-
-        /* 动画定义 */
-        @keyframes textFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-        @keyframes flapL { from { transform: rotate(30deg); } to { transform: rotate(-10deg); } }
-        @keyframes flapR { from { transform: scaleX(-1) rotate(30deg); } to { transform: scaleX(-1) rotate(-10deg); } }
-        
-        /* 简单的飞行路径 */
-        @keyframes flyPath {
-            0% { top: 10%; left: -10%; transform: scale(0.5); }
-            25% { top: 40%; left: 40%; transform: scale(1); }
-            50% { top: 30%; left: 60%; transform: rotate(10deg); }
-            75% { top: 60%; left: 80%; transform: rotate(-5deg); }
-            100% { top: 20%; left: 110%; transform: scale(0.5); }
-        }
-    </style>
-
-    <script>
-        // 点击遮罩，淡出并移除
-        const introOverlay = document.getElementById('intro-overlay');
-        introOverlay.addEventListener('click', () => {
-            introOverlay.style.opacity = '0';
-            introOverlay.style.pointerEvents = 'none'; // 让鼠标能穿透去点击书桌
-            
-            // 2秒后完全移除DOM（可选）
-            setTimeout(() => {
-                introOverlay.remove();
-            }, 2000);
-        });
-    </script>
+        body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
             overflow: hidden;
             background-color: #050505;
             font-family: var(--font-serif);
-            touch-action: none; /* 禁止移动端默认手势 */
+            touch-action: none; 
         }
 
-        /* PC端隐藏鼠标，移动端保持默认 */
-        @media (hover: hover) {
-            body { cursor: none; }
-        }
-
-        /* --- 3. 沉浸式背景 --- */
-        .desk-container {
-            position: relative;
-            width: 100vw; height: 100vh;
-            /* 背景图：深夜林间书桌氛围 (在线链接) */
-            background-image: url('https://images.unsplash.com/photo-1626082260790-a2924151a66a?q=80&w=2670&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* 叠加一层深色遮罩，让背景退后，突出前景物品 */
-            box-shadow: inset 0 0 150px rgba(0,0,0,0.9);
-        }
-        
-        /* 背景微调遮罩 */
-        .desk-overlay-tint {
-            position: absolute; top:0; left:0; width:100%; height:100%;
-            background: rgba(10, 5, 0, 0.5); /* 降低亮度 */
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* --- 4. 物品通用样式 --- */
-        .item {
-            position: absolute;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        /* --- 2. 开场动画层 (星尘蛾) --- */
+        #intro-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #08080a;
+            z-index: 9999;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            transition: opacity 1.5s ease-in-out, visibility 1.5s;
             cursor: pointer;
-            z-index: 5;
-            /* 初始状态：昏暗，融入夜色 */
-            filter: brightness(0.6) sepia(0.2);
-            /* 添加轻微的阴影，制造体积感 */
-            filter: drop-shadow(5px 10px 10px rgba(0,0,0,0.8));
         }
 
-        /* 呼吸动画：让物品看起来有生命力 */
-        @keyframes breathe {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-5px) scale(1.02); }
+        /* 飞蛾容器 */
+        .moth-container {
+            position: absolute;
+            width: 0; height: 0;
+            /* 飞行动画轨迹 */
+            animation: mothFly 6s infinite ease-in-out;
+            pointer-events: none;
         }
 
-        .item:hover {
-            transform: scale(1.1) translateY(-10px) !important; /* 悬停时放大 */
-            filter: brightness(1.1) sepia(0) drop-shadow(0 0 20px rgba(255, 200, 100, 0.4));
-            z-index: 20;
-            animation-play-state: paused; /* 悬停时暂停呼吸 */
+        /* 飞蛾主体绘制 (CSS) */
+        .moth-body {
+            position: absolute; width: 6px; height: 18px;
+            background: #fff; border-radius: 4px;
+            top: -9px; left: -3px;
+            box-shadow: 0 0 15px var(--moth-color);
+        }
+        .moth-wing {
+            position: absolute; top: -5px;
+            width: 24px; height: 35px;
+            background: radial-gradient(circle at 0% 100%, rgba(255,255,255,0.9), rgba(100,200,255,0.4));
+            border-radius: 50% 50% 0 50%;
+            transform-origin: center bottom;
+            filter: drop-shadow(0 0 8px var(--moth-color));
+            opacity: 0.8;
+        }
+        .left-wing { left: -22px; transform: rotate(30deg); animation: flapL 0.15s infinite alternate; }
+        .right-wing { left: 2px; transform: scaleX(-1) rotate(30deg); animation: flapR 0.15s infinite alternate; }
+
+        /* 粒子拖尾 */
+        .moth-trail {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+        .particle {
+            position: absolute; width: 3px; height: 3px;
+            background: gold; border-radius: 50%;
+            animation: particleFade 1.5s linear forwards;
         }
 
-        /* --- 5. 物品定位与图片引用 --- */
-        
-        /* A. 诺艾利亚：东方秘典 (中心) */
-        #item-book {
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 28vw; max-width: 400px;
+        /* 开场文案样式 */
+        .intro-text-box {
+            color: #e0e0e0; text-align: center;
+            opacity: 0;
+            animation: textAppear 2s ease-out 1s forwards;
+            position: relative; z-index: 10;
+        }
+        .intro-date {
+            font-family: var(--font-hand); color: #ffd700; font-size: 1.8rem;
+            margin-bottom: 2rem; letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        .intro-poem {
+            font-size: 1.3rem; line-height: 2.2; margin-bottom: 3rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+        .click-hint {
+            font-size: 0.9rem; color: #888; letter-spacing: 1px;
+            animation: pulse 2s infinite; border: 1px solid #444;
+            padding: 8px 16px; border-radius: 20px;
+        }
+
+        /* --- 3. 主界面：书桌容器 --- */
+        .desk-container {
+            position: relative; width: 100vw; height: 100vh;
+            /* 背景图：深夜林间营地 */
+            background-image: url('https://images.unsplash.com/photo-1626082260790-a2924151a66a?q=80&w=2670&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: inset 0 0 200px rgba(0,0,0,1); /* 四周暗角 */
+            opacity: 0; /* 初始隐藏，等待开场结束 */
+            transition: opacity 2s ease;
+        }
+        .desk-tint {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: rgba(15, 10, 5, 0.6); pointer-events: none; z-index: 1;
+        }
+
+        /* --- 4. 物品样式 (你的去背素材) --- */
+        .item {
+            position: absolute; z-index: 5;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            filter: brightness(0.5) sepia(0.3) drop-shadow(5px 10px 15px rgba(0,0,0,0.8));
+            /* 呼吸浮动动画 */
             animation: breathe 6s ease-in-out infinite;
         }
+        .item:hover {
+            transform: scale(1.1) translateY(-10px) rotate(var(--r, 0)) !important;
+            filter: brightness(1.15) sepia(0) drop-shadow(0 0 30px rgba(255, 200, 100, 0.4));
+            z-index: 20; animation-play-state: paused;
+        }
 
-        /* B. 瑟兰提斯：银徽 (左上) */
+        /* A. 古籍 (IMG_8517.jpg) */
+        #item-book {
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 28vw; max-width: 420px;
+            --r: 0deg;
+        }
+        /* B. 银徽 (IMG_8516.jpg) */
         #item-paladin {
-            top: 18%; left: 18%;
-            width: 12vw; max-width: 160px;
-            transform: rotate(-10deg);
-            animation: breathe 7s ease-in-out infinite 1s; /* 错开动画时间 */
+            top: 18%; left: 20%; width: 13vw; max-width: 180px;
+            transform: rotate(-10deg); --r: -10deg;
+            animation-delay: 1s;
         }
-
-        /* C. 伊索瑞安：萤石 (右上) */
+        /* C. 水晶 (IMG_8513.jpg) */
         #item-elf {
-            top: 22%; right: 18%;
-            width: 10vw; max-width: 140px;
-            transform: rotate(15deg);
-            animation: breathe 5s ease-in-out infinite 2s;
+            top: 22%; right: 18%; width: 12vw; max-width: 160px;
+            transform: rotate(15deg); --r: 15deg;
+            animation-delay: 2s;
         }
-
-        /* D. 雷肖恩：铁牌 (左下) */
+        /* D. 铁牌 (IMG_8514.jpg) */
         #item-merc {
-            top: 68%; left: 22%;
-            width: 9vw; max-width: 120px;
-            transform: rotate(20deg);
-            animation: breathe 8s ease-in-out infinite 0.5s;
+            top: 68%; left: 22%; width: 10vw; max-width: 140px;
+            transform: rotate(20deg); --r: 20deg;
+            animation-delay: 0.5s;
         }
-
-        /* E. 杰拉弗斯：金币 (右下) */
+        /* E. 金币 (IMG_8515.jpg) */
         #item-rogue {
-            top: 72%; right: 22%;
-            width: 7vw; max-width: 100px;
-            animation: breathe 4s ease-in-out infinite 1.5s;
+            top: 72%; right: 24%; width: 7vw; max-width: 100px;
+            transform: rotate(5deg); --r: 5deg;
+            animation-delay: 1.5s;
         }
 
-        /* --- 移动端适配 --- */
-        @media (max-width: 768px) {
-            #item-book { width: 60vw; top: 45%; }
-            #item-paladin { width: 25vw; top: 12%; left: 10%; }
-            #item-elf { width: 22vw; top: 12%; right: 10%; }
-            #item-merc { width: 20vw; top: 75%; left: 15%; }
-            #item-rogue { width: 18vw; top: 78%; right: 15%; }
-        }
-
-        /* --- 6. 光影遮罩 (提灯效果) --- */
-        .darkness-overlay {
+        /* --- 5. 光影交互 (鼠标提灯) --- */
+        .light-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 30;
-            background: radial-gradient(circle 250px at var(--x, 50%) var(--y, 50%), 
-                transparent 10%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0.96) 100%);
+            /* 混合模式 Multiply 实现真实光照叠加 */
+            background: radial-gradient(circle 300px at var(--x, 50%) var(--y, 50%), 
+                transparent 5%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0.98) 100%);
+            mix-blend-mode: multiply;
         }
-
-        /* 光标点 */
-        .cursor-light {
-            position: absolute; width: 30px; height: 30px;
-            background: rgba(255, 160, 60, 0.4);
+        .cursor-glow {
+            position: absolute; width: 20px; height: 20px;
+            background: rgba(255, 200, 100, 0.6);
             border-radius: 50%; pointer-events: none; z-index: 31;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 50px 20px rgba(255, 120, 0, 0.2);
+            box-shadow: 0 0 80px 40px rgba(255, 140, 50, 0.3);
             mix-blend-mode: screen;
-            transition: opacity 0.2s;
         }
 
-        /* --- 7. 故事弹窗 (羊皮纸风格) --- */
+        /* --- 6. 弹窗样式 (信纸) --- */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 100;
             justify-content: center; align-items: center;
             backdrop-filter: blur(5px);
+            animation: fadeModal 0.4s ease-out;
         }
         .modal-content {
-            background: #f4ecd8;
-            width: 85%; max-width: 550px; max-height: 85vh;
-            padding: 40px; border-radius: 4px;
-            box-shadow: 0 0 80px rgba(0,0,0,1);
-            overflow-y: auto;
-            border: 1px solid #8d6e63;
-            /* 纹理背景 */
-            background-image: linear-gradient(#d7ccc8 1px, transparent 1px);
-            background-size: 100% 2em;
-            line-height: 2em;
-        }
-        .modal-header {
-            text-align: center; margin-bottom: 25px;
-            border-bottom: 2px solid #5d4037; padding-bottom: 10px;
+            background: #fdfbf7; width: 85%; max-width: 550px; padding: 40px;
+            border: 1px solid #8d6e63; border-radius: 2px;
+            box-shadow: 0 0 100px rgba(0,0,0,1);
+            background-image: linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 100% 2rem; line-height: 2rem;
+            position: relative;
         }
         .modal-title {
-            font-family: var(--font-hand); font-size: 2.2rem; color: #3e2723; margin: 0;
-            font-weight: bold;
+            font-family: var(--font-hand); font-size: 2.5rem; color: #3e2723;
+            text-align: center; margin: 0 0 1rem 0;
+            border-bottom: 3px double #a1887f;
         }
-        .modal-subtitle {
-            font-family: var(--font-serif); font-size: 0.9rem; color: #795548; 
-            font-style: italic; margin-top: 8px; letter-spacing: 1px;
-        }
-        .modal-text {
-            font-family: var(--font-serif); font-size: 1.15rem; color: #212121; text-align: justify;
-        }
-        .highlight { color: #bf360c; font-weight: bold; }
+        .modal-text { font-size: 1.2rem; color: #212121; text-align: justify; }
         .close-btn {
-            position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #5d4037; cursor: pointer;
+            position: absolute; top: 10px; right: 20px; font-size: 2rem; 
+            cursor: pointer; color: #5d4037; font-family: var(--font-hand);
         }
-        .close-btn:hover { color: #b71c1c; }
+        .close-btn:hover { color: #b71c1c; transform: rotate(90deg); }
+
+        /* 动画定义 */
+        @keyframes mothFly {
+            0% { transform: translate(10vw, 10vh) scale(0.6) rotate(15deg); }
+            25% { transform: translate(60vw, 30vh) scale(1) rotate(-10deg); }
+            50% { transform: translate(40vw, 70vh) scale(0.8) rotate(20deg); }
+            75% { transform: translate(80vw, 50vh) scale(0.9) rotate(-5deg); }
+            100% { transform: translate(10vw, 10vh) scale(0.6) rotate(15deg); }
+        }
+        @keyframes flapL { from { transform: rotate(30deg); } to { transform: rotate(-20deg); } }
+        @keyframes flapR { from { transform: scaleX(-1) rotate(30deg); } to { transform: scaleX(-1) rotate(-20deg); } }
+        @keyframes breathe { 0%, 100% { transform: translateY(0) scale(1) rotate(var(--r)); } 50% { transform: translateY(-6px) scale(1.02) rotate(var(--r)); } }
+        @keyframes textAppear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @keyframes fadeModal { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            #item-book { width: 65vw; top: 45%; }
+            #item-paladin { width: 30vw; top: 12%; left: 8%; }
+            #item-elf { width: 28vw; top: 12%; right: 8%; }
+            #item-merc { width: 25vw; top: 75%; left: 10%; }
+            #item-rogue { width: 20vw; top: 80%; right: 10%; }
+            .intro-date { font-size: 1.4rem; }
+            .intro-poem { font-size: 1.1rem; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="desk-container">
-        <div class="desk-overlay-tint"></div>
+    <div id="intro-overlay" onclick="startExperience()">
+        <div class="moth-container">
+            <div class="moth-wing left-wing"></div>
+            <div class="moth-body"></div>
+            <div class="moth-wing right-wing"></div>
+        </div>
+        
+        <div class="intro-text-box">
+            <div class="intro-date">午夜 · 库德马克边境</div>
+            <div class="intro-poem">
+                <p>所谓冒险，不过是将生命的全部重量，</p>
+                <p>压缩进这方寸之间的行囊。</p>
+                <br>
+                <p>荣耀是银色的枷锁，纯真是易碎的水晶，</p>
+                <p>归宿是空白的铁牌，命运是翻转的金币。</p>
+            </div>
+            <div class="click-hint">点击屏幕 · 惊飞星尘</div>
+        </div>
+    </div>
 
-        <img src="IMG_8509.jpg" id="item-book" class="item" onclick="openModal('book')">
+    <div class="desk-container" id="desk">
+        <div class="desk-tint"></div>
 
-        <img src="IMG_8508.jpg" id="item-paladin" class="item" onclick="openModal('paladin')">
+        <img src="IMG_8517.jpg" id="item-book" class="item" onclick="openModal('book')">
 
-        <img src="IMG_8510.jpg" id="item-elf" class="item" onclick="openModal('elf')">
+        <img src="IMG_8516.jpg" id="item-paladin" class="item" onclick="openModal('paladin')">
 
-        <img src="IMG_8511.jpg" id="item-merc" class="item" onclick="openModal('merc')">
+        <img src="IMG_8513.jpg" id="item-elf" class="item" onclick="openModal('elf')">
 
-        <img src="IMG_8512.jpg" id="item-rogue" class="item" onclick="openModal('rogue')">
+        <img src="IMG_8514.jpg" id="item-merc" class="item" onclick="openModal('merc')">
 
+        <img src="IMG_8515.jpg" id="item-rogue" class="item" onclick="openModal('rogue')">
 
-        <div class="darkness-overlay" id="overlay"></div>
-        <div class="cursor-light" id="cursor"></div>
+        <div class="light-overlay" id="overlay"></div>
+        <div class="cursor-glow" id="cursor"></div>
     </div>
 
     <div id="modal-overlay" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <span class="close-btn" onclick="closeModal()">×</span>
-            <div class="modal-header">
-                <h2 id="m-title" class="modal-title">标题</h2>
-                <div id="m-subtitle" class="modal-subtitle">角色</div>
-            </div>
+            <span class="close-btn" onclick="closeModal()">✕</span>
+            <h2 id="m-title" class="modal-title">标题</h2>
             <div id="m-text" class="modal-text">内容...</div>
         </div>
     </div>
 
     <script>
-        // --- 角色与物品数据库 (V4版文学性文案) ---
-        const contentData = {
-            'book': {
-                title: "失落的道途",
-                subtitle: "诺艾利亚·哈勒温 | 寻找真理的法师",
-                text: "这本古籍的皮革封面因为反复抚摸而变得温润，边缘甚至有些起毛。它记录的不是晦涩的奥术公式，而是一个遥远东方古国关于<span class='highlight'>“道”</span>的哲学——万物皆有律，顺势而为。<br><br>在这个魔法工业轰鸣、蒸汽与水晶并存的时代，我是唯一一个还在试图聆听大地呼吸的人。我的法师塔太高了，高到听不见真实的声音，也看不清人心的距离。<br><br>所以我必须走下来。为了寻找书页中那虚无缥缈的真理，我踏入了库德马克的泥泞。我以为我在寻找神，后来才发现，我在寻找那个能让我真正落地的“锚点”。"
-            },
-            'paladin': {
-                title: "荣耀的重量",
-                subtitle: "瑟兰提斯·维瑞安·德拉维昂 | 家族继承人",
-                text: "一枚沉甸甸的纯银家徽，背面刻着德拉维昂家族的誓言。虽然已经有些氧化发黑，但狮鹫的纹路依然锋利得割手。<br><br>瑟兰提斯每天都会擦拭它，不是为了炫耀，而是为了确认那份冰冷的责任是否还压在胸口。每当夜深人静，卸下板甲的她总会想起那个翻窗带她去夜市的舅舅——那个教会她“责任之外还有生活”的人。<br><br>这枚银徽是她身为圣骑士的荣耀，也是锁住她翅膀的精致枷锁。她在等待一个理由，一个能让她不仅仅为了姓氏，而是为了自己挥剑的时刻。"
-            },
-            'elf': {
-                title: "未琢之光",
-                subtitle: "伊索瑞安 | 不知阴霾的太阳",
-                text: "一块未经雕琢的绿色原石，粗糙、有着天然的裂纹，却在火光下泛着幽幽的荧光。这是他离开森林时，长辈塞在他手心里的护身符。<br><br>“外面的世界很脏，伊索，别弄丢了你的光。”<br><br>但他还是跑出来了，带着那头金色的卷发和碧蓝的眼睛，像个不知天高地厚的太阳。他渴望传奇，渴望故事，却不知道故事往往是用血写的。这块石头是他与家乡最后的脐带，也是他那份纯真灵魂的具象化——虽然脆弱，却依然发着光。"
-            },
-            'merc': {
-                title: "空白的墓碑",
-                subtitle: "雷肖恩 | 沉默的锚点",
-                text: "一块满是划痕和锈迹的劣质铁牌，挂在一条油腻的皮绳上。通常佣兵会在上面刻下名字和血型，但这块牌子是<span class='highlight'>空白的</span>。<br><br>他是一个没有过去的影子，一个从库德马克贫民窟尸堆里爬出来的幸存者。那具1米9的半兽人混血躯壳上布满了伤疤，那是环境留下的刻痕，但他拒绝让环境定义他的名字。<br><br>“如果不属于任何地方，就没有刻下名字的必要。”<br><br>他习惯了像工具一样被使用，直到那个夜晚，诺艾利亚拉住了他沾满鲜血的手。现在的他，正在这块铁牌上预留一个位置，等待刻下那个名为“家”的字眼。"
-            },
-            'rogue': {
-                title: "命运的筹码",
-                subtitle: "杰拉弗斯 | 渴望家的孩子",
-                text: "这枚金币的边缘已经被摩挲得光滑发亮。对于这个16岁的提夫林少年来说，它不是货币，而是<span class='highlight'>命运的骰子</span>。<br><br>他总是把它抛向空中，看着它在火光中旋转。正面是生存，反面是毁灭。在世人眼中，提夫林是天生的坏种，于是他用狡黠的笑容和满不在乎的谎言武装自己。<br><br>“既然你们都这么觉得，那我就坏得彻底一点。”<br><br>但在金币落下的瞬间，他会下意识地握紧它。他并不贪财，他只是想攒够足够的筹码，试图从残酷的命运手里，买回一个不会被驱逐的角落，一个能被称为“家”的席位。"
-            }
-        };
-
         // --- 交互逻辑 ---
+        
+        // 1. 开场动画结束
+        function startExperience() {
+            const intro = document.getElementById('intro-overlay');
+            const desk = document.getElementById('desk');
+            
+            // 飞蛾惊飞效果 (简单的淡出放大)
+            intro.style.transform = "scale(1.1)";
+            intro.style.opacity = "0";
+            intro.style.visibility = "hidden";
+            
+            // 显示书桌
+            desk.style.opacity = "1";
+        }
+
+        // 2. 光标移动 (提灯效果)
         const overlay = document.getElementById('overlay');
         const cursor = document.getElementById('cursor');
-        const modal = document.getElementById('modal-overlay');
-        
-        // 移动光源
+
         function moveLight(x, y) {
             overlay.style.setProperty('--x', x + 'px');
             overlay.style.setProperty('--y', y + 'px');
             cursor.style.left = x + 'px';
             cursor.style.top = y + 'px';
-            cursor.style.opacity = '1';
         }
-
-        document.addEventListener('mousemove', (e) => moveLight(e.clientX, e.clientY));
-        document.addEventListener('touchmove', (e) => {
-            e.preventDefault(); 
-            const touch = e.touches[0];
-            moveLight(touch.clientX, touch.clientY);
+        document.addEventListener('mousemove', e => moveLight(e.clientX, e.clientY));
+        document.addEventListener('touchmove', e => {
+            e.preventDefault();
+            moveLight(e.touches[0].clientX, e.touches[0].clientY);
         }, { passive: false });
-        document.addEventListener('touchstart', (e) => {
-            const touch = e.touches[0];
-            moveLight(touch.clientX, touch.clientY);
-        });
 
-        // 弹窗控制
+        // 3. 故事内容 (V4版深度文案)
+        const contentData = {
+            'book': {
+                title: "失落的道途",
+                text: "这本古籍的皮革封面因为反复抚摸而变得温润，边缘甚至有些起毛。它记录的不是晦涩的奥术公式，而是一个遥远东方古国关于<b>“道”</b>的哲学——万物皆有律，顺势而为。<br><br>在魔法工业轰鸣的时代，我是唯一一个还在试图聆听大地呼吸的人。我踏入库德马克的泥泞，只为寻找那个能让我真正落地的“锚点”。"
+            },
+            'paladin': {
+                title: "荣耀的重量",
+                text: "一枚沉甸甸的纯银家徽，背面刻着德拉维昂家族的誓言。虽然已经有些氧化，但狮鹫的纹路依然锋利得割手。<br><br>瑟兰提斯每天都会擦拭它，不是为了炫耀，而是为了确认那份冰冷的责任是否还压在胸口。这枚银徽是她身为圣骑士的荣耀，也是锁住她翅膀的精致枷锁。"
+            },
+            'elf': {
+                title: "未琢之光",
+                text: "一块未经雕琢的绿色原石，粗糙、有着天然的裂纹，却在火光下泛着幽幽的荧光。<br><br>“外面的世界很脏，伊索，别弄丢了你的光。”但他还是跑出来了，带着那头金色的卷发，像个不知天高地厚的太阳。这块石头是他与家乡最后的脐带，也是他那份纯真灵魂的具象化。"
+            },
+            'merc': {
+                title: "空白的名牌",
+                text: "一块满是划痕和锈迹的劣质铁牌，挂在一条油腻的皮绳上。通常佣兵会在上面刻下名字，但这块牌子是<b>空白的</b>。<br><br>“如果不属于任何地方，就没有刻下名字的必要。”他是一个没有过去的影子。现在的他，正在这块铁牌上预留一个位置，等待刻下那个名为“家”的字眼。"
+            },
+            'rogue': {
+                title: "命运的筹码",
+                text: "这枚金币的边缘已经被摩挲得光滑发亮。对于这个提夫林少年来说，它不是货币，而是<b>命运的骰子</b>。<br><br>他总是把它抛向空中，正面是生存，反面是毁灭。他用狡黠的笑容武装自己，紧握这枚金币，试图从残酷的命运手里，买回一个不会被驱逐的席位。"
+            }
+        };
+
+        // 4. 弹窗控制
+        const modal = document.getElementById('modal-overlay');
+        const mTitle = document.getElementById('m-title');
+        const mText = document.getElementById('m-text');
+
         function openModal(key) {
             const data = contentData[key];
             if(data) {
-                document.getElementById('m-title').innerHTML = data.title;
-                document.getElementById('m-subtitle').innerHTML = data.subtitle;
-                document.getElementById('m-text').innerHTML = data.text;
+                mTitle.innerHTML = data.title;
+                mText.innerHTML = data.text;
                 modal.style.display = 'flex';
             }
         }
-
         function closeModal() {
             modal.style.display = 'none';
         }
