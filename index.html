@@ -28,7 +28,128 @@
         @media (hover: hover) {
             body { cursor: none; }
         }
+<div id="intro-overlay">
+        <div class="moth-container">
+            <div class="moth-wing left"></div>
+            <div class="moth-body"></div>
+            <div class="moth-wing right"></div>
+            <div class="moth-trail"></div>
+        </div>
 
+        <div class="intro-text-box">
+            <div class="intro-date">午夜 · 库德马克边境</div>
+            <p>
+                所谓冒险，不过是将生命的全部重量，<br>
+                压缩进这方寸之间的行囊。
+            </p>
+            <p>
+                荣耀是银色的枷锁，<br>
+                纯真是易碎的水晶，<br>
+                归宿是空白的铁牌。
+            </p>
+            <div class="intro-footer">
+                <span class="click-hint">点击屏幕，惊飞星尘</span>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* --- 开场遮罩样式 --- */
+        #intro-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            transition: opacity 1.5s ease-in-out;
+            cursor: pointer;
+        }
+
+        .intro-text-box {
+            color: #dcdcdc;
+            text-align: center;
+            opacity: 0;
+            animation: textFadeIn 2s ease-out 1.5s forwards; /* 延迟出现 */
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        .intro-date {
+            font-family: var(--font-hand);
+            color: #ffd700;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            letter-spacing: 3px;
+        }
+
+        .intro-text-box p {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            line-height: 2;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .intro-footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #666;
+            animation: pulse 2s infinite;
+        }
+
+        /* --- 星尘蛾 CSS 绘图与动画 --- */
+        .moth-container {
+            position: absolute;
+            width: 20px; height: 20px;
+            /* 飞行轨迹动画 */
+            animation: flyPath 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(100, 200, 255, 0.8));
+        }
+
+        .moth-body {
+            width: 4px; height: 12px; background: #fff;
+            border-radius: 2px; position: absolute; left: 8px; top: 4px;
+        }
+
+        .moth-wing {
+            width: 12px; height: 18px;
+            background: rgba(200, 240, 255, 0.6);
+            position: absolute; top: 0;
+            border-radius: 50% 50% 0 50%;
+            transform-origin: center bottom;
+        }
+        .moth-wing.left { left: -8px; transform: rotate(30deg); animation: flapL 0.1s infinite alternate; }
+        .moth-wing.right { right: -8px; transform: scaleX(-1) rotate(30deg); animation: flapR 0.1s infinite alternate; }
+
+        /* 动画定义 */
+        @keyframes textFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        @keyframes flapL { from { transform: rotate(30deg); } to { transform: rotate(-10deg); } }
+        @keyframes flapR { from { transform: scaleX(-1) rotate(30deg); } to { transform: scaleX(-1) rotate(-10deg); } }
+        
+        /* 简单的飞行路径 */
+        @keyframes flyPath {
+            0% { top: 10%; left: -10%; transform: scale(0.5); }
+            25% { top: 40%; left: 40%; transform: scale(1); }
+            50% { top: 30%; left: 60%; transform: rotate(10deg); }
+            75% { top: 60%; left: 80%; transform: rotate(-5deg); }
+            100% { top: 20%; left: 110%; transform: scale(0.5); }
+        }
+    </style>
+
+    <script>
+        // 点击遮罩，淡出并移除
+        const introOverlay = document.getElementById('intro-overlay');
+        introOverlay.addEventListener('click', () => {
+            introOverlay.style.opacity = '0';
+            introOverlay.style.pointerEvents = 'none'; // 让鼠标能穿透去点击书桌
+            
+            // 2秒后完全移除DOM（可选）
+            setTimeout(() => {
+                introOverlay.remove();
+            }, 2000);
+        });
+    </script>
         /* --- 3. 沉浸式背景 --- */
         .desk-container {
             position: relative;
