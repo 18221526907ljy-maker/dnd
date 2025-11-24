@@ -3,340 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>诺艾利亚的营地书桌 | Noelier's Camp Desk</title>
+    <title>诺艾利亚的旅途 | Noelier's Journey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- 1. 字体系统 --- */
+        /* --- 1. 全局变量与重置 --- */
         :root {
-            /* 标题手写体：兼容多平台的楷体/行楷 */
-            --font-hand: "KaiTi", "STKaiti", "Xingkai SC", "SimKai", "Brush Script MT", cursive;
-            /* 正文印刷体：宋体/明体 */
-            --font-serif: "Songti SC", "SimSun", "Times New Roman", serif;
+            --primary-gold: #ffd700;
+            --bg-dark: #0f1014;
+            --glass-bg: rgba(20, 20, 25, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-glow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
-        /* --- 2. 基础设定 --- */
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
             overflow: hidden;
-            background-color: #050505;
-            font-family: var(--font-serif);
-            touch-action: none;
+            background-color: var(--bg-dark);
+            font-family: 'Noto Serif SC', serif;
+            color: white;
+            user-select: none; /* 禁止选中文本，更像App */
         }
 
-        /* PC端隐藏鼠标，移动端保持默认 */
-        @media (hover: hover) {
-            body { cursor: none; }
-        }
-
-        /* --- 3. 沉浸式背景 (高清实景) --- */
-        .desk-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            /* 背景：一张昏暗的深色木纹桌子 */
-            background-image: url('https://images.unsplash.com/photo-1544253930-bc00e8064cb9?q=80&w=2574&auto=format&fit=crop');
+        /* --- 2. 沉浸式动态背景 --- */
+        #bg-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            /* 选用一张精美的二次元幻想风景图 */
+            background-image: url('https://images.alphacoders.com/133/1330364.png'); 
+            /* 备用图源：如果上面挂了，会显示深色 */
             background-size: cover;
             background-position: center;
+            z-index: 1;
+            filter: brightness(0.6); /* 压暗背景，突出前景 */
+            transition: transform 10s ease-out;
+        }
+        
+        /* 粒子画布 */
+        #particle-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2; pointer-events: none;
+        }
+
+        /* --- 3. 桌面/UI 容器 --- */
+        .ui-container {
+            position: relative;
+            width: 100%; height: 100%;
+            z-index: 10;
             display: flex;
             justify-content: center;
             align-items: center;
-            /* 加一层暗色遮罩，让背景不抢戏 */
-            box-shadow: inset 0 0 150px rgba(0,0,0,0.9);
-        }
-        
-        /* 背景微调遮罩 */
-        .desk-overlay-tint {
-            position: absolute; top:0; left:0; width:100%; height:100%;
-            background: rgba(10, 5, 0, 0.4);
-            pointer-events: none;
         }
 
-        /* --- 4. 物品通用样式 --- */
-        .item {
+        /* --- 4. 物品卡片 (Card System) --- */
+        .item-card {
             position: absolute;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            width: 100px; height: 100px;
+            border-radius: 16px;
+            /* 毛玻璃效果 */
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            
+            display: flex; justify-content: center; align-items: center;
             cursor: pointer;
-            z-index: 5;
-            /* 默认状态：昏暗、低饱和度 */
-            filter: brightness(0.5) sepia(0.3) blur(0.5px);
-            transform-origin: center center;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .item:hover {
-            transform: scale(1.08) translateY(-5px);
-            /* 悬停状态：变亮、清晰、发光 */
-            filter: brightness(1.2) sepia(0) blur(0) drop-shadow(0 0 15px rgba(255, 200, 100, 0.5));
-            z-index: 20;
+        /* 物品内的图标图片 */
+        .item-icon {
+            width: 70%; height: 70%;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+            transition: transform 0.3s ease;
         }
 
-        /* 物品标签 (鼠标悬停时显示) */
-        .item::after {
-            content: attr(data-label);
+        /* 悬停特效 */
+        .item-card:hover {
+            transform: scale(1.15) translateY(-10px);
+            border-color: rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3), inset 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+        .item-card:hover .item-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* 标签文字 */
+        .item-label {
             position: absolute;
-            bottom: -30px; left: 50%;
-            transform: translateX(-50%);
-            color: #e0e0e0;
-            font-family: var(--font-hand);
+            bottom: -30px;
+            font-family: 'Ma Shan Zheng', cursive; /* 书法字体 */
             font-size: 1.2rem;
+            color: var(--primary-gold);
             text-shadow: 0 2px 4px black;
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
             white-space: nowrap;
         }
-        .item:hover::after { opacity: 1; }
+        .item-card:hover .item-label { opacity: 1; bottom: -40px; }
 
-        /* === 物品A: 诺艾利亚的古籍 === */
-        #item-book {
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 320px; height: 220px;
-            /* 真实古书封面 */
-            background-image: url('https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=800&auto=format&fit=crop');
-            background-size: cover;
-            border-radius: 4px 10px 10px 4px;
-            box-shadow: 10px 15px 30px rgba(0,0,0,0.8);
-            border-left: 15px solid #1a1a1a; /* 书脊 */
-        }
+        /* --- 物品定位 (布局) --- */
+        /* A. 古籍 (中心) */
+        #card-book { top: 50%; left: 50%; width: 160px; height: 160px; transform: translate(-50%, -50%); z-index: 5; }
+        
+        /* B. 圣徽 (左上) */
+        #card-paladin { top: 20%; left: 20%; animation: float 6s ease-in-out infinite; }
+        
+        /* C. 水晶 (右上) */
+        #card-elf { top: 25%; right: 20%; animation: float 5s ease-in-out infinite 1s; }
+        
+        /* D. 铁牌 (左下) */
+        #card-merc { top: 65%; left: 25%; animation: float 7s ease-in-out infinite 0.5s; }
+        
+        /* E. 金币 (右下) */
+        #card-rogue { top: 70%; right: 25%; animation: float 4s ease-in-out infinite 2s; }
 
-        /* === 物品B: 骑士瑟兰提斯的银徽 === */
-        #item-paladin {
-            top: 20%; left: 20%;
-            width: 90px; height: 90px;
-            transform: rotate(-15deg);
-            /* 银饰纹理 */
-            background-image: url('https://images.unsplash.com/photo-1615655406736-b37c4fabf923?q=80&w=400&auto=format&fit=crop');
-            background-size: 150%;
-            background-position: center;
-            border-radius: 50%;
-            border: 3px solid #cfd8dc; /* 银边 */
-            box-shadow: 5px 10px 20px rgba(0,0,0,0.7);
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
-        /* === 物品C: 精灵伊索瑞安的绿萤石 === */
-        #item-elf {
-            top: 25%; right: 20%;
-            width: 70px; height: 90px;
-            transform: rotate(10deg);
-            /* 水晶/宝石纹理 */
-            background-image: url('https://images.unsplash.com/photo-1616423664074-7548d881cd34?q=80&w=400&auto=format&fit=crop');
-            background-size: cover;
-            /* 裁剪成不规则水晶形状 */
-            clip-path: polygon(50% 0%, 100% 25%, 85% 100%, 15% 100%, 0% 25%);
-            box-shadow: inset 0 0 20px rgba(0,255,100,0.3); /* 内发光 */
-            filter: brightness(0.7) sepia(0.2); /* 初始稍微暗一点 */
-        }
-        /* 精灵物品需要特殊的发光悬停效果 */
-        #item-elf:hover {
-            filter: brightness(1.3) drop-shadow(0 0 20px rgba(50, 255, 100, 0.6));
-        }
-
-        /* === 物品D: 雷肖恩的无字铁牌 === */
-        #item-merc {
-            top: 70%; left: 25%;
-            width: 70px; height: 110px;
-            transform: rotate(10deg);
-            /* 锈迹金属纹理 */
-            background-image: url('https://images.unsplash.com/photo-1550966479-24755a8286df?q=80&w=400&auto=format&fit=crop');
-            background-size: cover;
-            border-radius: 8px;
-            /* 顶部打孔 */
-            clip-path: polygon(10% 0, 90% 0, 100% 10%, 100% 100%, 0 100%, 0 10%);
-            box-shadow: 8px 8px 15px rgba(0,0,0,0.8);
-        }
-        /* 穿孔的皮绳 (CSS画) */
-        #item-merc::before {
-            content: ''; position: absolute; top: -50px; left: 50%; width: 4px; height: 60px;
-            background: #3e2723; transform: translateX(-50%) rotate(-5deg); z-index: -1;
-        }
-
-        /* === 物品E: 杰拉弗斯的金币 === */
-        #item-rogue {
-            top: 75%; left: 75%;
-            width: 60px; height: 60px;
-            /* 黄金纹理 */
-            background-image: url('https://images.unsplash.com/photo-1555545595-650acda90458?q=80&w=400&auto=format&fit=crop');
-            background-size: cover;
-            border-radius: 50%;
-            border: 2px dashed rgba(255,215,0,0.6);
-            box-shadow: 2px 5px 10px rgba(0,0,0,0.6);
-            /* 漂浮动画 */
-            animation: floatCoin 3s ease-in-out infinite;
-        }
-        @keyframes floatCoin {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(180deg); }
-        }
-
-        /* --- 5. 移动端适配调整 --- */
+        /* --- 5. 移动端适配 --- */
         @media (max-width: 768px) {
-            #item-book { width: 260px; height: 180px; top: 45%; }
-            #item-paladin { top: 12%; left: 15%; width: 70px; height: 70px; }
-            #item-elf { top: 12%; right: 15%; width: 60px; height: 80px; }
-            #item-merc { top: 75%; left: 15%; width: 60px; height: 90px; }
-            #item-rogue { top: 80%; left: 75%; width: 50px; height: 50px; }
+            #card-book { width: 140px; height: 140px; top: 45%; }
+            #card-paladin { top: 15%; left: 10%; width: 80px; height: 80px; }
+            #card-elf { top: 15%; right: 10%; width: 80px; height: 80px; }
+            #card-merc { top: 70%; left: 15%; width: 80px; height: 80px; }
+            #card-rogue { top: 75%; right: 15%; width: 80px; height: 80px; }
         }
 
-        /* --- 6. 光影遮罩 (提灯效果) --- */
-        .darkness-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 30;
-            /* 径向渐变模拟光源 */
-            background: radial-gradient(circle 250px at var(--x, 50%) var(--y, 50%), 
-                transparent 10%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0.96) 100%);
+        /* --- 6. 视觉小说式弹窗 (UI) --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        /* 光标点 */
-        .cursor-light {
-            position: absolute; width: 30px; height: 30px;
-            background: rgba(255, 160, 60, 0.4);
-            border-radius: 50%; pointer-events: none; z-index: 31;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 50px 20px rgba(255, 120, 0, 0.2);
-            mix-blend-mode: screen;
-            transition: opacity 0.2s;
+        .dialogue-box {
+            position: relative;
+            width: 80%; max-width: 600px;
+            background: rgba(18, 20, 30, 0.95);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 100px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
+            /* 装饰线条 */
+            background-image: 
+                linear-gradient(to right, rgba(255,215,0,0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,215,0,0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
         }
 
-        /* --- 7. 故事弹窗 (羊皮纸风格) --- */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 100;
-            justify-content: center; align-items: center;
-            backdrop-filter: blur(5px);
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-overlay.active .dialogue-box { transform: scale(1); }
+
+        .char-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 10px 0;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
         }
-        .modal-content {
-            background: #f4ecd8;
-            width: 85%; max-width: 550px; max-height: 85vh;
-            padding: 40px; border-radius: 3px;
-            box-shadow: 0 0 80px rgba(0,0,0,1);
-            overflow-y: auto;
-            border: 1px solid #8d6e63;
-            /* 纹理背景 */
-            background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png'), linear-gradient(#d7ccc8 1px, transparent 1px);
-            background-size: auto, 100% 2em;
-            line-height: 2em;
+
+        .char-subtitle {
+            font-size: 1rem; color: #8899a6; margin-bottom: 20px;
+            text-transform: uppercase; letter-spacing: 2px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            display: inline-block;
         }
-        .modal-header {
-            text-align: center; margin-bottom: 20px;
-            border-bottom: 2px solid #5d4037; padding-bottom: 10px;
+
+        .story-text {
+            font-size: 1.1rem; line-height: 1.8; color: #e0e0e0;
+            text-align: justify;
         }
-        .modal-title {
-            font-family: var(--font-hand); font-size: 2.2rem; color: #3e2723; margin: 0;
-        }
-        .modal-subtitle {
-            font-family: var(--font-serif); font-size: 0.9rem; color: #795548; font-style: italic; margin-top: 5px;
-        }
-        .modal-text {
-            font-family: var(--font-serif); font-size: 1.1rem; color: #212121; text-align: justify;
-        }
-        .highlight { color: #bf360c; font-weight: bold; }
+        
+        .story-text strong { color: #ffca28; }
+
         .close-btn {
-            position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #5d4037; cursor: pointer;
+            position: absolute; top: 15px; right: 20px;
+            font-size: 1.5rem; color: #666; cursor: pointer;
+            transition: color 0.2s;
         }
+        .close-btn:hover { color: #fff; }
+
     </style>
 </head>
 <body>
 
-    <div class="desk-container">
-        <div class="desk-overlay-tint"></div>
+    <div id="bg-layer"></div>
+    <canvas id="particle-canvas"></canvas>
 
-        <div id="item-book" class="item" data-label="东方古籍" onclick="openModal('book')"></div>
+    <div class="ui-container">
+        
+        <div id="card-book" class="item-card" onclick="openModal('book')">
+            <img src="https://img.icons8.com/external-flaticons-flat-flat-icons/100/external-spellbook-fantasy-flaticons-flat-flat-icons.png" class="item-icon" alt="Book">
+            <div class="item-label">东方秘典</div>
+        </div>
 
-        <div id="item-paladin" class="item" data-label="瑟兰提斯的银徽" onclick="openModal('paladin')"></div>
+        <div id="card-paladin" class="item-card" onclick="openModal('paladin')">
+            <img src="https://img.icons8.com/color/96/security-checked--v1.png" class="item-icon" alt="Shield">
+            <div class="item-label">家族银徽</div>
+        </div>
 
-        <div id="item-elf" class="item" data-label="伊索瑞安的信物" onclick="openModal('elf')"></div>
+        <div id="card-elf" class="item-card" onclick="openModal('elf')">
+            <img src="https://img.icons8.com/color/96/emerald.png" class="item-icon" alt="Gem">
+            <div class="item-label">森林之心</div>
+        </div>
 
-        <div id="item-merc" class="item" data-label="雷肖恩的铁牌" onclick="openModal('merc')"></div>
+        <div id="card-merc" class="item-card" onclick="openModal('merc')">
+            <img src="https://img.icons8.com/color/96/dog-tag.png" class="item-icon" alt="Tag">
+            <div class="item-label">无名之牌</div>
+        </div>
 
-        <div id="item-rogue" class="item" data-label="杰拉弗斯的金币" onclick="openModal('rogue')"></div>
-
-        <div class="darkness-overlay" id="overlay"></div>
-        <div class="cursor-light" id="cursor"></div>
+        <div id="card-rogue" class="item-card" onclick="openModal('rogue')">
+            <img src="https://img.icons8.com/fluency/96/stack-of-coins.png" class="item-icon" alt="Coin">
+            <div class="item-label">幸运金币</div>
+        </div>
+        
     </div>
 
-    <div id="modal-overlay" class="modal" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <span class="close-btn" onclick="closeModal()">×</span>
-            <div class="modal-header">
-                <h2 id="m-title" class="modal-title">标题</h2>
-                <div id="m-subtitle" class="modal-subtitle">角色</div>
-            </div>
-            <div id="m-text" class="modal-text">内容...</div>
+    <div id="modal" class="modal-overlay" onclick="closeModal()">
+        <div class="dialogue-box" onclick="event.stopPropagation()">
+            <span class="close-btn" onclick="closeModal()">✕</span>
+            <h2 id="m-title" class="char-title">角色名</h2>
+            <div id="m-sub" class="char-subtitle">ROLE TITLE</div>
+            <div id="m-text" class="story-text">故事内容...</div>
         </div>
     </div>
 
     <script>
-        // --- 角色与物品数据库 ---
-        const contentData = {
+        // --- 故事数据库 ---
+        const stories = {
             'book': {
-                title: "失落的道途",
-                subtitle: "诺艾利亚·哈勒温 (Noelier)",
-                text: "这本古籍的皮革封面已经因为反复抚摸而变得温润。它记录的不是咒语，而是一种名为<span class='highlight'>“道”</span>的东方哲学。<br><br>“万物皆有律，顺势而为。”<br>在魔法工业轰鸣的时代，我是唯一一个还在寻找自然静谧的人。我的法师塔太高，高到听不见大地的声音。所以我必须走下来，穿过库德马克的泥泞，去寻找书页中记载的真理。"
+                title: "诺艾利亚的秘典",
+                sub: "WIZARD / PROTAGONIST",
+                text: "在这本绘满符文的法术书夹层里，藏着几页泛黄的手稿。那是关于一个遥远东方教派的记载——<b>“道”</b>。<br><br>在这个魔法工业革命轰鸣的时代，我是法师塔里唯一的异类。我听不见机器的运转声，我只想听见大地的呼吸。为了寻找这虚无缥缈的真理，我走出了高塔，踏入了库德马克的混乱雨夜。"
             },
             'paladin': {
-                title: "家族的银徽",
-                subtitle: "瑟兰提斯 (Therantis)",
-                text: "一枚沉甸甸的纯银家徽，背面刻着德拉维昂家族的誓言。她每天都会擦拭它，不是为了炫耀，而是为了确认它是否还在那里——那个沉重的、冰冷的责任。<br><br>“荣耀即吾命，但...自由呢？”<br>每当夜深人静，她会想起那个翻窗带她去夜市的舅舅。这枚银徽是她身为圣骑士的荣耀，也是锁住她翅膀的枷锁。她在等待一个理由，或者一个时刻，能让她为了自己挥剑，而不是为了姓氏。"
+                title: "瑟兰提斯的誓言",
+                sub: "PALADIN / NOBLE",
+                text: "这枚银徽不仅仅是德拉维昂家族的荣耀，更是一把精致的锁。瑟兰提斯每天擦拭它，看着镜中那个被厚重板甲包裹的自己。<br><br><b>“责任”</b>二字压得她喘不过气。直到她遇见了这群毫无规矩的队友，她才第一次感觉到，或许手中的剑除了守护家族，也可以为了斩断自己的枷锁而挥舞。"
             },
             'elf': {
-                title: "森林绿萤石",
-                subtitle: "伊索瑞安 (Isorian)",
-                text: "一块未经雕琢的绿色原石，在火光下泛着幽幽的荧光。这是他离开森林时，母亲塞在他手心里的护身符。<br><br>“外面的世界很脏，伊索，别弄丢了你的光。”<br>但他还是跑出来了，带着那头金色的卷发和碧蓝的眼睛，像个不知天高地厚的太阳。他渴望传奇，渴望故事，却不知道故事往往是用血写的。这块石头是他与家乡最后的联系，也是他纯真灵魂的具象化。"
+                title: "伊索瑞安的萤石",
+                sub: "ELF RANGER / THE SUN",
+                text: "这颗翠绿的萤石来自森林的最深处，那是他家乡凝固的眼泪。伊索瑞安总是把它举过头顶，透过它去看浑浊的天空。<br><br>他是队伍里不知阴霾的太阳，渴望着传说中的冒险。但他终将明白，真正的传奇不是吟游诗人嘴里的赞歌，而是他在战友倒下时，颤抖着射出的那支必中的光箭。"
             },
             'merc': {
-                title: "无字铁牌",
-                subtitle: "雷肖恩 (Reshaun)",
-                text: "一块满是划痕和锈迹的劣质铁牌。通常佣兵会在上面刻下名字和血型，但这块牌子是<span class='highlight'>空白的</span>。<br><br>他是一个没有过去的影子，一个从库德马克贫民窟爬出来的幸存者。1米9的半兽人混血身躯上布满伤疤，但最深的一道在心里。<br>“如果不属于任何地方，就没有刻下名字的必要。”<br>他在等待一个值得让他刻下名字的归处，也许...就在这个篝火旁。"
+                title: "雷肖恩的空牌",
+                sub: "MERCENARY / THE ANCHOR",
+                text: "一块没有任何刻字的铁牌，冰冷而粗糙。对于一个从库德马克贫民窟爬出来的半兽人混血来说，名字是多余的奢侈品。<br><br>他习惯了沉默，习惯了像工具一样被使用。直到那个夜晚，诺艾利亚拉住了他沾满鲜血的手。现在的他，正在这块铁牌上预留一个位置，等待刻下那个名为<b>“家”</b>的字眼。"
             },
             'rogue': {
-                title: "幸运金币",
-                subtitle: "杰拉弗斯 (Jalavers)",
-                text: "这枚金币的边缘已经被磨得光滑。对于这个16岁的提夫林少年来说，它不是货币，而是<span class='highlight'>命运的骰子</span>。<br><br>他总是把它抛向空中，看着它在火光中旋转。正面是生存，反面是毁灭。<br>“既然世人都觉得我是坏种，那我就坏得彻底一点。”<br>他笑嘻嘻地掩饰着眼底的不安。他并不贪财，他只是想用这枚金币买到一个不会被驱逐的角落，一个能被称为“家”的地方。"
+                title: "杰拉弗斯的赌注",
+                sub: "TIEFLING ROGUE",
+                text: "一枚被摩挲得发亮的金币。提夫林少年总是一边坏笑着抛起它，一边观察着队友的表情。<br><br>在这个充满偏见的世界里，他用狡黠和谎言武装自己。但这枚金币从不离身，因为那是他唯一的底气。他并不是真的贪婪，他只是在攒钱，试图从命运手里买回一个不被驱逐的席位。"
             }
         };
 
         // --- 交互逻辑 ---
-        const overlay = document.getElementById('overlay');
-        const cursor = document.getElementById('cursor');
-        const modal = document.getElementById('modal-overlay');
-        
-        // 移动光源
-        function moveLight(x, y) {
-            overlay.style.setProperty('--x', x + 'px');
-            overlay.style.setProperty('--y', y + 'px');
-            cursor.style.left = x + 'px';
-            cursor.style.top = y + 'px';
-            cursor.style.opacity = '1';
-        }
+        const modal = document.getElementById('modal');
+        const mTitle = document.getElementById('m-title');
+        const mSub = document.getElementById('m-sub');
+        const mText = document.getElementById('m-text');
 
-        document.addEventListener('mousemove', (e) => moveLight(e.clientX, e.clientY));
-        document.addEventListener('touchmove', (e) => {
-            e.preventDefault(); 
-            const touch = e.touches[0];
-            moveLight(touch.clientX, touch.clientY);
-        }, { passive: false });
-        document.addEventListener('touchstart', (e) => {
-            const touch = e.touches[0];
-            moveLight(touch.clientX, touch.clientY);
-        });
-
-        // 弹窗控制
         function openModal(key) {
-            const data = contentData[key];
+            const data = stories[key];
             if(data) {
-                document.getElementById('m-title').innerHTML = data.title;
-                document.getElementById('m-subtitle').innerHTML = data.subtitle;
-                document.getElementById('m-text').innerHTML = data.text;
-                modal.style.display = 'flex';
+                mTitle.innerHTML = data.title;
+                mSub.innerHTML = data.sub;
+                mText.innerHTML = data.text;
+                modal.classList.add('active');
             }
         }
 
         function closeModal() {
-            modal.style.display = 'none';
+            modal.classList.remove('active');
         }
+
+        // --- 粒子系统 (营造二次元魔法氛围) ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        const particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = height + Math.random() * 100;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = -Math.random() * 1 - 0.5;
+                this.size = Math.random() * 2 + 1;
+                this.alpha = Math.random() * 0.5 + 0.2;
+                this.fade = Math.random() * 0.01 + 0.005;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.fade;
+                if(this.alpha <= 0) this.reset();
+            }
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = '#ffd700'; // 金色粒子
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for(let i=0; i<50; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
     </script>
 </body>
 </html>
